@@ -1,8 +1,8 @@
-# coding=UTF-8
 import sqlite3
+import json
 import datetime
 from flask import Flask, render_template, request
-DATABASE = 'D:/ngca/data/data.db' # data/data.db
+DATABASE = 'D:/ngca/data/data.db'
 app = Flask(__name__)
 @app.route("/")
 def hello():
@@ -18,7 +18,6 @@ def hello():
         temp1 = data[len(data) - 1]
         temp = temp1[2]
         return render_template('view.html', data = data, temp = temp)
-#Adding data
 @app.route("/input", methods = ['POST', 'GET'])
 def add_data():
     if request.method == 'POST':
@@ -43,6 +42,30 @@ def add_data():
         return '1'
     else:
         return '0'
+@app.route("/get", methods = ['POST', 'GET'])
+def get_data():
+    if request.method == 'POST':
+        sensorid = int(request.form.get('id'))
+    else:
+        sensorid = int(request.args.get('id'))
+    db = sqlite3.connect(DATABASE)
+    cur = db.cursor()
+    cur.execute("SELECT * FROM sensorlog where sensorid = %d" % sensorid)
+    data = cur.fetchall()
+    cur.close()
+    db.close()
+@app.route("/view", methods = ['POST', 'GET'])
+def view_data():
+    if request.method == 'POST':
+        sensorid = int(request.form.get('id'))
+    else:
+        sensorid = int(request.args.get('id'))
+    db = sqlite3.connect(DATABASE)
+    cur = db.cursor()
+    cur.execute("SELECT * FROM sensorlog where sensorid = %d" % sensorid)
+    data = cur.fetchall()
+    cur.close()
+    db.close()
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 8080, debug = True)
