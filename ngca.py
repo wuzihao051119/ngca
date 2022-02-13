@@ -1,7 +1,10 @@
-import sqlite3
-import json
 import datetime
+import json
+import sqlite3
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 from flask import Flask, render_template, request
+
 DATABASE = 'D:/ngca/data/data.db'
 app = Flask(__name__)
 @app.route("/")
@@ -30,10 +33,13 @@ def add_data():
     nowtime = nowtime.strftime('%Y-%m-%d %H:%M:%S')
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    cur.execute("INSERT INTO sensorlog(sensorid, sensorvalue, updatetime) VALUES(%d, %f, '%s')" % (sensorid, sensorvalue, nowtime))
-    db.commit()
-    cur.execute("SELECT * FROM sensorlist where sensorid = %d" % sensorid)
-    rv = cur.fetchall()
+    try:
+        cur.execute("INSERT INTO sensorlog(sensorid, sensorvalue, updatetime) VALUES(?, ?, ?)", (sensorid, sensorvalue, nowtime))
+        db.commit()
+        cur.execute("SELECT * FROM sensorlist where sensorid = ?", (sensorid,))
+        rv = cur.fetchall()
+    except:
+        return 'Error'
     cur.close()
     db.close()
     maxrv = rv[0][2]
@@ -50,8 +56,11 @@ def get_data():
         sensorid = int(request.args.get('id'))
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    cur.execute("SELECT * FROM sensorlog where sensorid = %d" % sensorid)
-    data = cur.fetchall()
+    try:
+        cur.execute("SELECT * FROM sensorlog where sensorid = ?", (sensorid,))
+        data = cur.fetchall()
+    except:
+        return
     cur.close()
     db.close()
 @app.route("/view", methods = ['POST', 'GET'])
@@ -62,10 +71,25 @@ def view_data():
         sensorid = int(request.args.get('id'))
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    cur.execute("SELECT * FROM sensorlog where sensorid = %d" % sensorid)
-    data = cur.fetchall()
+    try:
+        cur.execute("SELECT * FROM sensorlog where sensorid = ?", (sensorid,))
+        data = cur.fetchall()
+    except:
+        return
     cur.close()
     db.close()
+    time=[]
+    temperature=[]
+    for item in data:
+        temperature.append(item[2])
+        time.append(item[3][11:19])
+    font = FontProperties(fname = "C:/Windows/Fonts/simsun.ttc", size = 15)
+    plt.plot(time, temperature)
+    plt.xlabel(time)
+    plt.ylabel(temperature)
+    plt.title(str(sensorid) + "号传感器")
+    plt.savefig("static/image/image.jpg", dpi = 200, format = "jpg")
+    return render_template("image.html")
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 8080, debug = True)

@@ -1,16 +1,27 @@
 <!doctype html>
-<body><meta http-equiv="refresh" content="60"></body>
+<body lang="zh-cn">
+    <meta http-equiv="refresh" content="5">
+</body>
 <style>
-    #center{margin-right: auto; margin-left: auto; background: #eff7ff; width: 600px;
-    height: 500px; vertical-align: left; overflow-y: scroll; overflow-x: scroll;}
+    #center
+    {
+        margin-right: auto;
+        margin-left: auto;
+        background: #eff7ff;
+        width: 600px;
+        height: 500px;
+        vertical-align: left;
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
 </style>
 <title>室内环境实时监测系统</title>
 <h1 align="center">室内环境实时监测系统</h1>
 <h2 align="center">当前室内温度: {{temp}}</h2>
-<h2 align="center"><a herf="/">刷新</a>数据历史列表:</h2>
+<h2 align="center">数据历史列表:</h2>
 <div id="center" style="border:2px solid #96c2f1">
-温度  记录时间<br>
+温度&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;记录时间<br>
 {% for i in data[::-1] %}
-    {{i[2]}}    {{i[3]}} <br>
+    {{i[2]}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{i[3]}} <br>
 {% endfor %}
 </div>
