@@ -23,12 +23,15 @@ def hello():
         return render_template('view.html', data = data, temp = temp)
 @app.route("/input", methods = ['POST', 'GET'])
 def add_data():
-    if request.method == 'POST':
-        sensorid = int(request.form.get('id'))
-        sensorvalue = float(request.form.get('val'))
-    else:
-        sensorid = int(request.args.get('id'))
-        sensorvalue = float(request.args.get('val'))
+    try:
+        if request.method == 'POST':
+            sensorid = int(request.form.get('id'))
+            sensorvalue = float(request.form.get('val'))
+        else:
+            sensorid = int(request.args.get('id'))
+            sensorvalue = float(request.args.get('val'))
+    except:
+        return 'Error'
     nowtime = datetime.datetime.now()
     nowtime = nowtime.strftime('%Y-%m-%d %H:%M:%S')
     db = sqlite3.connect(DATABASE)
@@ -50,10 +53,13 @@ def add_data():
         return '0'
 @app.route("/get", methods = ['POST', 'GET'])
 def get_data():
-    if request.method == 'POST':
-        sensorid = int(request.form.get('id'))
-    else:
-        sensorid = int(request.args.get('id'))
+    try:
+        if request.method == 'POST':
+            sensorid = int(request.form.get('id'))
+        else:
+            sensorid = int(request.args.get('id'))
+    except:
+        return 'Error'
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
     try:
@@ -65,10 +71,13 @@ def get_data():
     db.close()
 @app.route("/view", methods = ['POST', 'GET'])
 def view_data():
-    if request.method == 'POST':
-        sensorid = int(request.form.get('id'))
-    else:
-        sensorid = int(request.args.get('id'))
+    try:
+        if request.method == 'POST':
+            sensorid = int(request.form.get('id'))
+        else:
+            sensorid = int(request.args.get('id'))
+    except:
+        return 'Error'
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
     try:
@@ -78,16 +87,22 @@ def view_data():
         return
     cur.close()
     db.close()
+    if data == []:
+        return render_template("empty.html")
     time=[]
     temperature=[]
     for item in data:
         temperature.append(item[2])
         time.append(item[3][11:19])
     font = FontProperties(fname = "C:/Windows/Fonts/simsun.ttc", size = 15)
+    fig = plt.figure()
+    fig.set_figheight()
+    fig.set_figwidth()
     plt.plot(time, temperature)
-    plt.xlabel(time)
-    plt.ylabel(temperature)
-    plt.title(str(sensorid) + "号传感器")
+    plt.xlabel("时间", fontproperties = font)
+    plt.xticks(rotation = 30)
+    plt.ylabel("温度", fontproperties = font)
+    plt.title(str(sensorid) + "号传感器", fontproperties = font)
     plt.savefig("static/image/image.jpg", dpi = 200, format = "jpg")
     return render_template("image.html")
 
