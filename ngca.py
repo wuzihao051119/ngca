@@ -44,6 +44,8 @@ def add_data():
         return 'Error'
     cur.close()
     db.close()
+    if rv == []:
+        return 'Error'
     maxrv = rv[0][2]
     minrv = rv[0][3]
     if sensorvalue > maxrv or sensorvalue < minrv:
