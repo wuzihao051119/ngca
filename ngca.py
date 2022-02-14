@@ -114,6 +114,7 @@ def view_data():
     plt.ylabel("温度", fontproperties = font)
     plt.title(str(sensorid) + "号传感器", fontproperties = font)
     plt.savefig("static/image/image.jpg", dpi = 200, format = "jpg")
+    plt.close()
     return render_template("image.html")
 
 if __name__ == "__main__":
