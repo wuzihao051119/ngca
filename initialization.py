@@ -1,5 +1,5 @@
 import sqlite3
-db = sqlite3.connect('D:/ngca/data/data.db')
+db = sqlite3.connect('data/data.db')
 cur = db.cursor()
 sensornumber = int(input("请输入增加的传感器数量: "))
 for i in range(sensornumber):

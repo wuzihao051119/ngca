@@ -1,11 +1,10 @@
 import datetime
-import json
 import sqlite3
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 from flask import Flask, render_template, request
 
-DATABASE = 'D:/ngca/data/data.db'
+DATABASE = 'data/data.db'
 app = Flask(__name__)
 @app.route("/")
 def hello():
@@ -69,6 +68,20 @@ def get_data():
         return
     cur.close()
     db.close()
+    body = ""
+    part = [0] * len(data)
+    head = "{\n  \"sensorid\":\"" + str(sensorid) + "\",\n  \"value\":[\n"
+    for i in range(len(data)):
+        value = data[i][2]
+        time = data[i][3]
+        part[i] = "    {\n      \"sensorvalue\":\"" + str(value) + "\",\n      \"updatetime\":\"" + str(time) + "\"\n    }"
+    for i in range(len(data)):
+        if i != len(data) - 1:
+            body += part[i] + ",\n"
+        else:
+            body += part[i] + "\n"
+    json_text = head + body + "  ]\n}"
+    return json_text
 @app.route("/view", methods = ['POST', 'GET'])
 def view_data():
     try:
@@ -95,9 +108,6 @@ def view_data():
         temperature.append(item[2])
         time.append(item[3][11:19])
     font = FontProperties(fname = "C:/Windows/Fonts/simsun.ttc", size = 15)
-    fig = plt.figure()
-    fig.set_figheight()
-    fig.set_figwidth()
     plt.plot(time, temperature)
     plt.xlabel("时间", fontproperties = font)
     plt.xticks(rotation = 30)
