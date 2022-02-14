@@ -42,10 +42,12 @@ def add_data():
         rv = cur.fetchall()
     except:
         return 'Error'
+    if rv == []:
+        cur.execute("DELETE FROM sensorlog WHERE sensorid = ?", (sensorid,))
+        db.commit()
+        return 'Error'
     cur.close()
     db.close()
-    if rv == []:
-        return 'Error'
     maxrv = rv[0][2]
     minrv = rv[0][3]
     if sensorvalue > maxrv or sensorvalue < minrv:
