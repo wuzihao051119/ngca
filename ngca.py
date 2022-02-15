@@ -10,8 +10,11 @@ app = Flask(__name__)
 def hello():
     db = sqlite3.connect(DATABASE)
     cur = db.cursor()
-    cur.execute("SELECT * FROM sensorlog WHERE sensorid = 1")
-    data = cur.fetchall()
+    try:
+        cur.execute("SELECT * FROM sensorlog WHERE sensorid = 1")
+        data = cur.fetchall()
+    except:
+        return 'Error'
     cur.close()
     db.close()
     if data ==[]:
@@ -43,8 +46,11 @@ def add_data():
     except:
         return 'Error'
     if rv == []:
-        cur.execute("DELETE FROM sensorlog WHERE sensorid = ?", (sensorid,))
-        db.commit()
+        try:
+            cur.execute("DELETE FROM sensorlog WHERE sensorid = ?", (sensorid,))
+            db.commit()
+        except:
+            return 'Error'
         return 'Error'
     cur.close()
     db.close()
